@@ -54,9 +54,9 @@ The main executable script is `PasswordManager.py`, which manages the applicatio
 ## ▶️ Usage
 
 Run the application:
-    ```bash
+  
     python PasswordManager.py
-    ```
+   
 - On first launch you'll be prompted to set a master password.
 - On subsequent launches, enter your master password to access the stored passwords.
 - Use the GUI to add or delete password entries.

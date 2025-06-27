@@ -1,0 +1,5 @@
+# Cryptography library for encryption/decryption
+cryptography>=41.0.0
+
+# PyQt6 for GUI interface
+PyQt6>=6.5.0

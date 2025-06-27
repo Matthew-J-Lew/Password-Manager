@@ -7,17 +7,26 @@ from cryptography.fernet import Fernet
 import os
 import sqlite3
 
+#Setup constants and make sure data folder exists
+DATA_DIR = "data"
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+MASTER_PASSWORD_PATH = os.path.join(DATA_DIR, 'masterPassword.txt')
+MANAGER_KEY_PATH = os.path.join(DATA_DIR, 'managerKey.key')
+MASTER_KEY_PATH = os.path.join(DATA_DIR, 'masterKey.key')
+PASSWORDS_DB_PATH = os.path.join(DATA_DIR, 'passwords.db')
+
 #This file checks if there are any missing files and creates them if theyre missing
 #Returns True if the user has a master password set, else returns False
 def isFirstTime():
     #Checking each necessary file, if it does not exist create it
-    if not os.path.exists('masterPassword.txt'):
-        if not os.path.exists("managerKey.key"):
-            generateKey("managerKey.key")
-        if not os.path.exists("masterKey.key"):
-            generateKey("masterKey.key")
-        if not os.path.exists('passwords.db'):
-            connection = sqlite3.connect('passwords.db')
+    if not os.path.exists(MASTER_PASSWORD_PATH):
+        if not os.path.exists(MANAGER_KEY_PATH):
+            generateKey(MANAGER_KEY_PATH)
+        if not os.path.exists(MASTER_KEY_PATH):
+            generateKey(MASTER_KEY_PATH)
+        if not os.path.exists(PASSWORDS_DB_PATH):
+            connection = sqlite3.connect(PASSWORDS_DB_PATH)
             connection.execute('''CREATE TABLE MANAGER
                                     (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                     PLATFORM        TEXT,
@@ -34,10 +43,10 @@ def generateKey(fileName):
         myKey.write(newKey)
 #Next 2 functions can be compiled into one, just need to implement proper passing of parameters
 def loadPassKey():
-    with open("masterKey.key","rb") as myKey:
+    with open(MASTER_KEY_PATH,"rb") as myKey:
         return myKey.read()
 def loadKey():
-    with open('managerKey.key','rb') as myKey:
+    with open(MANAGER_KEY_PATH,'rb') as myKey:
         return myKey.read()
 
 #These next two functions are solely for encrypting and decrypting the user's master password, it's existence is redundant however
@@ -46,13 +55,13 @@ def encryptPassword(password):
     #Casts the password to byte format
     b= str.encode(password)
     fernet = Fernet(loadPassKey())
-    with open('masterPassword.txt','wb') as myFile:
+    with open(MASTER_PASSWORD_PATH,'wb') as myFile:
         temp = fernet.encrypt(b)
         myFile.write(temp)
 def decryptPassword():
     #Decrypting password
     fernet = Fernet(loadPassKey())
-    with open('masterPassword.txt','rb') as myFile:
+    with open(MASTER_PASSWORD_PATH,'rb') as myFile:
         encryptedPassword = myFile.read()
         decryptedPassword = fernet.decrypt(encryptedPassword)
         decryptedPassword = decryptedPassword.decode('utf-8')
@@ -74,7 +83,7 @@ def decryptDatabase(encryptedDataBase):
 #to ensure that no temp files can be accessed for the decrypted passwords
 def loadDatabase():
     #Opening file
-    with open('passwords.db','rb') as myFile:
+    with open(PASSWORDS_DB_PATH,'rb') as myFile:
         encryptedFile = myFile.read()
     #Decrypting it from byte form
     decryptedFile = decryptDatabase(encryptedFile)
@@ -91,7 +100,7 @@ def storeDatabase(database):
     for line in database.iterdump():
         b += bytes('%s\n','utf8') % bytes(line,'utf8')
     #Encrypting and writing the file
-    with open('passwords.db','wb') as myFile:
+    with open(PASSWORDS_DB_PATH,'wb') as myFile:
         temp = encryptDatabase(b)
         myFile.write(temp)
 
@@ -127,9 +136,3 @@ def printDatabase(database):
         print("ID = ", row[0])
         print("PLATFORM = ", row[1])
         print("PASSWORD = ", row[2])
-
-
-
-
-
-

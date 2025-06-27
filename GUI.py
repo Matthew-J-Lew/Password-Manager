@@ -208,4 +208,3 @@ def callWindow(window):
     myWindow.show()
     #starts main loop
     GUI.exec()
-

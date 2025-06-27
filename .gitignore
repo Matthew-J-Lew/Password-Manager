@@ -1,0 +1,32 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Byte-compiled files and logs
+*.log
+
+# === PyInstaller ===
+build/
+dist/
+*.spec
+
+# === Virtual Environments ===
+venv/
+.env/
+.venv/
+
+# === IDEs ===
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+
+# === Application Data Files ===
+data/
